@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GX❤ 爱心专属</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #000;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        /* 登录界面 */
+        .login-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #111;
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 25px #ff69b4;
+            z-index: 100;
+        }
+        .login-box h2 {
+            color: #ff69b4;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        .login-box input {
+            width: 260px;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+        .login-box button {
+            width: 260px;
+            padding: 12px;
+            background: #ff69b4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        /* 倒计时 */
+        .count-tip {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 90px;
+            color: #ff69b4;
+            font-weight: bold;
+            display: none;
+            z-index: 99;
+        }
+        /* 彩色小卡片 + 开启丝滑过渡 */
+        .card-box {
+            position: absolute;
+            width: 125px;
+            height: 38px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            color: #333;
+            /* 丝滑爆开核心：过渡时长0.6秒 缓动曲线 */
+            transition: left 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登录 -->
+<div class="login-box" id="loginBox">
+    <h2>专属登录</h2>
+    <input type="text" id="userName" placeholder="用户名">
+    <input type="password" id="pwd" placeholder="密码">
+    <button onclick="loginCheck()">登录</button>
+</div>
+
+<!-- 倒计时 -->
+<div class="count-tip" id="countTip">别心急<br>3</div>
+
+<script>
+// ===================== 完全使用你的 Python 参数 =====================
+const WIN_W = 125;
+const WIN_H = 38;
+const HEART_SCALE = 26;
+const HEART_COUNT = 130;
+const NEW_ADD_COUNT = 70;
+const WAIT_SEC = 1;
+const SPREAD_ALL_SEC = 3;
+
+const texts = [
+    '我喜欢你','岁岁年年','平安喜乐','满心欢喜',
+    '朝朝暮暮','温柔以待','永远偏爱你','万事顺遂',
+    '好好生活','不离不弃','愿你安好','满眼都是你'
+];
+const colors = [
+    'lightpink','lavender','lightblue','lightyellow',
+    'mistyrose','peachpuff','plum','lightcyan'
+];
+
+let heartCards = [];
+let screenW = window.innerWidth;
+let screenH = window.innerHeight;
+let centerX = screenW / 2;
+let centerY = screenH / 2;
+
+// 登录验证
+function loginCheck() {
+    let user = document.getElementById("userName").value.trim();
+    let pwd = document.getElementById("pwd").value.trim();
+    if (user === "GX" && pwd === "20060406") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("countTip").style.display = "block";
+        startCountDown();
+    } else {
+        alert("用户名或密码错误");
+    }
+}
+
+// 倒计时 3→2→1
+function startCountDown() {
+    let num = 3;
+    let tip = document.getElementById("countTip");
+    let timer = setInterval(() => {
+        num--;
+        tip.innerHTML = `别心急<br>${num}`;
+        if (num <= 0) {
+            clearInterval(timer);
+            tip.style.display = "none";
+            startHeartEffect();
+        }
+    }, 1000);
+}
+
+// 爱心坐标公式（和你Python完全一致）
+function getHeartPoints(t) {
+    let x = HEART_SCALE * 16 * Math.pow(Math.sin(t), 3);
+    let y = -HEART_SCALE * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    return { x, y };
+}
+
+// 创建小卡片
+function createCard(x, y) {
+    let card = document.createElement("div");
+    card.className = "card-box";
+    card.style.left = x + "px";
+    card.style.top = y + "px";
+    card.style.background = colors[Math.floor(Math.random() * colors.length)];
+    card.innerText = texts[Math.floor(Math.random() * texts.length)];
+    document.body.appendChild(card);
+    return card;
+}
+
+// 随机角落生成
+function randomCornerPos() {
+    let edge = ["left", "right", "top", "bottom"][Math.floor(Math.random() * 4)];
+    let x, y;
+    if (edge === "left") {
+        x = Math.random() * (screenW / 4);
+        y = Math.random() * (screenH - WIN_H);
+    } else if (edge === "right") {
+        x = (screenW * 3/4) + Math.random() * (screenW/4 - WIN_W);
+        y = Math.random() * (screenH - WIN_H);
+    } else if (edge === "top") {
+        x = Math.random() * (screenW - WIN_W);
+        y = Math.random() * (screenH / 4);
+    } else {
+        x = Math.random() * (screenW - WIN_W);
+        y = (screenH * 3/4) + Math.random() * (screenH/4 - WIN_H);
+    }
+    return { x, y };
+}
+
+// 延迟函数
+function delay(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}
+
+// 主效果：爱心丝滑爆开
+async function startHeartEffect() {
+    // 1. 生成爱心
+    for (let i = 0; i < HEART_COUNT; i++) {
+        let t = i * 2 * Math.PI / HEART_COUNT;
+        let pos = getHeartPoints(t);
+        let px = centerX + pos.x - WIN_W / 2;
+        let py = centerY + pos.y - WIN_H / 2;
+        let card = createCard(px, py);
+        heartCards.push(card);
+        await delay(30);
+    }
+
+    // 2. 定格1秒
+    await delay(WAIT_SEC * 1000);
+
+    // 3. 丝滑渐变爆开 不是瞬移
+    heartCards.forEach(card => {
+        let tx = Math.random() * (screenW - WIN_W);
+        let ty = Math.random() * (screenH - WIN_H);
+        card.style.left = tx + "px";
+        card.style.top = ty + "px";
+    });
+
+    // 4. 3秒内从四角陆续生成铺满
+    let steps = 30;
+    let stepSleep = (SPREAD_ALL_SEC * 1000) / steps;
+    let newAdded = 0;
+
+    for (let step = 1; step <= steps; step++) {
+        let ratio = step / steps;
+        let needNow = parseInt(NEW_ADD_COUNT * ratio);
+        
+        while (newAdded < needNow) {
+            let pos = randomCornerPos();
+            createCard(pos.x, pos.y);
+            newAdded++;
+        }
+        await delay(stepSleep);
+    }
+}
+</script>
+</body>
+</html>
