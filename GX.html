@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>GX❤ 爱心专属</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GX❤️ 爱心专属</title>
     <style>
         * {
             margin: 0;
@@ -68,21 +68,21 @@
             display: none;
             z-index: 99;
         }
-        /* 手机自适应小卡片 */
+        /* 手机端小卡片 */
         .card-box {
             position: absolute;
-            width: 100px;
-            height: 32px;
+            width: 80px;
+            height: 26px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 11px;
+            font-size: 10px;
             color: #333;
             border-radius: 4px;
             transition: left 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
                         top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        /* 电脑上恢复正常大小 */
+        /* 电脑端恢复正常大小 */
         @media (min-width: 768px) {
             .card-box {
                 width: 125px;
@@ -110,12 +110,11 @@
 
 <script>
 // ===================== 配置 =====================
-const WIN_W = 100;
-const WIN_H = 32;
-const PC_WIN_W = 125;
-const PC_WIN_H = 38;
-
-const HEART_SCALE = 22;
+// 自动适配设备尺寸
+const isMobile = window.innerWidth < 768;
+const WIN_W = isMobile ? 80 : 125;
+const WIN_H = isMobile ? 26 : 38;
+const HEART_SCALE = isMobile ? 14 : 26; // 手机端缩小爱心尺寸
 const HEART_COUNT = 130;
 const NEW_ADD_COUNT = 70;
 const WAIT_SEC = 1;
@@ -136,7 +135,6 @@ let screenW = window.innerWidth;
 let screenH = window.innerHeight;
 let centerX = screenW / 2;
 let centerY = screenH / 2;
-let isMobile = window.innerWidth < 768;
 
 // 登录验证
 function loginCheck() {
@@ -168,9 +166,8 @@ function startCountDown() {
 
 // 爱心坐标公式
 function getHeartPoints(t) {
-    let scale = isMobile ? 20 : 26;
-    let x = scale * 16 * Math.pow(Math.sin(t), 3);
-    let y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    let x = HEART_SCALE * 16 * Math.pow(Math.sin(t), 3);
+    let y = -HEART_SCALE * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
     return { x, y };
 }
 
@@ -188,22 +185,20 @@ function createCard(x, y) {
 
 // 随机角落生成
 function randomCornerPos() {
-    let w = isMobile ? WIN_W : PC_WIN_W;
-    let h = isMobile ? WIN_H : PC_WIN_H;
     let edge = ["left", "right", "top", "bottom"][Math.floor(Math.random() * 4)];
     let x, y;
     if (edge === "left") {
         x = Math.random() * (screenW / 4);
-        y = Math.random() * (screenH - h);
+        y = Math.random() * (screenH - WIN_H);
     } else if (edge === "right") {
-        x = (screenW * 3/4) + Math.random() * (screenW/4 - w);
-        y = Math.random() * (screenH - h);
+        x = (screenW * 3/4) + Math.random() * (screenW/4 - WIN_W);
+        y = Math.random() * (screenH - WIN_H);
     } else if (edge === "top") {
-        x = Math.random() * (screenW - w);
+        x = Math.random() * (screenW - WIN_W);
         y = Math.random() * (screenH / 4);
     } else {
-        x = Math.random() * (screenW - w);
-        y = (screenH * 3/4) + Math.random() * (screenH/4 - h);
+        x = Math.random() * (screenW - WIN_W);
+        y = (screenH * 3/4) + Math.random() * (screenH/4 - WIN_H);
     }
     return { x, y };
 }
@@ -215,15 +210,12 @@ function delay(ms) {
 
 // 主效果：爱心丝滑爆开
 async function startHeartEffect() {
-    let w = isMobile ? WIN_W : PC_WIN_W;
-    let h = isMobile ? WIN_H : PC_WIN_H;
-
     // 1. 生成爱心
     for (let i = 0; i < HEART_COUNT; i++) {
         let t = i * 2 * Math.PI / HEART_COUNT;
         let pos = getHeartPoints(t);
-        let px = centerX + pos.x - w / 2;
-        let py = centerY + pos.y - h / 2;
+        let px = centerX + pos.x - WIN_W / 2;
+        let py = centerY + pos.y - WIN_H / 2;
         let card = createCard(px, py);
         heartCards.push(card);
         await delay(30);
@@ -234,8 +226,8 @@ async function startHeartEffect() {
 
     // 3. 丝滑渐变爆开
     heartCards.forEach(card => {
-        let tx = Math.random() * (screenW - w);
-        let ty = Math.random() * (screenH - h);
+        let tx = Math.random() * (screenW - WIN_W);
+        let ty = Math.random() * (screenH - WIN_H);
         card.style.left = tx + "px";
         card.style.top = ty + "px";
     });
