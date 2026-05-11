@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GX❤️ 爱心专属</title>
+    <title>关心❤️专属</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #111;
+            background: #fdd8e5;
             padding: 30px 20px;
             border-radius: 15px;
             text-align: center;
@@ -56,7 +56,7 @@
             cursor: pointer;
             margin-top: 8px;
         }
-        /* 倒计时 */
+        /* 倒计时  */
         .count-tip {
             position: fixed;
             top: 50%;
@@ -67,6 +67,8 @@
             font-weight: bold;
             display: none;
             z-index: 99;
+            text-align: center;
+            line-height: 1.2;
         }
         /* 手机端小卡片 */
         .card-box {
@@ -83,7 +85,7 @@
                         top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         /* 电脑端恢复正常大小 */
-        @media (min-width: 768px) {
+        @media (min-width:768px) {
             .card-box {
                 width: 125px;
                 height: 38px;
@@ -92,6 +94,33 @@
             .count-tip {
                 font-size: 90px;
             }
+        }
+
+                .final-box {
+            position: fixed;
+            top: 50%;
+: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff69b4;
+            color: white;
+            padding: 35px 30px;
+            border-radius: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 200;
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.6);
+            display: none;
+            width: 85%;
+            max-width: 420px;
+            line-height: 1.6;
+            animation: fadeIn 1.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
     </style>
 </head>
@@ -108,22 +137,30 @@
 <!-- 倒计时 -->
 <div class="count-tip" id="countTip">别心急<br>3</div>
 
+
+<div class="final-box" id="finalBox">最重要的是小关老师要天天开心</div>
+
 <script>
-// ===================== 配置 =====================
 // 自动适配设备尺寸
 const isMobile = window.innerWidth < 768;
 const WIN_W = isMobile ? 80 : 125;
 const WIN_H = isMobile ? 26 : 38;
-const HEART_SCALE = isMobile ? 14 : 26; // 手机端缩小爱心尺寸
+const HEART_SCALE = isMobile ? 14 : 26;
 const HEART_COUNT = 130;
 const NEW_ADD_COUNT = 70;
 const WAIT_SEC = 1;
 const SPREAD_ALL_SEC = 3;
 
 const texts = [
-    '我喜欢你','岁岁年年','平安喜乐','满心欢喜',
-    '朝朝暮暮','温柔以待','永远偏爱你','万事顺遂',
-    '好好生活','不离不弃','愿你安好','满眼都是你'
+    '慢慢相处','平安喜乐','有点贪心','万般倾心',
+    '朝朝暮暮','温柔以待','心生欢喜','万事顺遂',
+    '记得开心','不离不弃','来日方长','感谢相遇',
+    '偏爱例外','满眼星河','风遇山海','我遇于你',
+    '余光皆你','心起涟漪','情有归处','温柔沦陷',
+    '风寄心事','云间藏念','落笔予你','半醒心动',
+    '晚风念旧','星河予卿','清欢予你','枕月思君',
+    '只予温柔','来日可期','缘起于你','不负韶华',
+    '借风寻你','温渡朝暮','心事予卿','神明偏爱'
 ];
 const colors = [
     'lightpink','lavender','lightblue','lightyellow',
@@ -149,7 +186,7 @@ function loginCheck() {
     }
 }
 
-// 倒计时 3→2→1
+// 倒计时 
 function startCountDown() {
     let num = 3;
     let tip = document.getElementById("countTip");
@@ -164,14 +201,14 @@ function startCountDown() {
     }, 1000);
 }
 
-// 爱心坐标公式
+//坐标公式
 function getHeartPoints(t) {
     let x = HEART_SCALE * 16 * Math.pow(Math.sin(t), 3);
     let y = -HEART_SCALE * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
     return { x, y };
 }
 
-// 创建小卡片
+//小卡片
 function createCard(x, y) {
     let card = document.createElement("div");
     card.className = "card-box";
@@ -183,7 +220,7 @@ function createCard(x, y) {
     return card;
 }
 
-// 随机角落生成
+// 随机生成
 function randomCornerPos() {
     let edge = ["left", "right", "top", "bottom"][Math.floor(Math.random() * 4)];
     let x, y;
@@ -221,10 +258,10 @@ async function startHeartEffect() {
         await delay(30);
     }
 
-    // 2. 定格1秒
+    // 定格
     await delay(WAIT_SEC * 1000);
 
-    // 3. 丝滑渐变爆开
+    //  爆开
     heartCards.forEach(card => {
         let tx = Math.random() * (screenW - WIN_W);
         let ty = Math.random() * (screenH - WIN_H);
@@ -232,7 +269,7 @@ async function startHeartEffect() {
         card.style.top = ty + "px";
     });
 
-    // 4. 3秒内从四角陆续生成铺满
+    // 四角陆续生成铺满
     let steps = 30;
     let stepSleep = (SPREAD_ALL_SEC * 1000) / steps;
     let newAdded = 0;
@@ -248,6 +285,8 @@ async function startHeartEffect() {
         }
         await delay(stepSleep);
     }
+    await delay(800);
+    document.getElementById("finalBox").style.display = "block";
 }
 </script>
 </body>
