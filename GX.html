@@ -23,36 +23,38 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: #111;
-            padding: 40px 30px;
+            padding: 30px 20px;
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 0 25px #ff69b4;
             z-index: 100;
+            width: 90%;
+            max-width: 280px;
         }
         .login-box h2 {
             color: #ff69b4;
-            margin-bottom: 25px;
-            font-size: 22px;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
         .login-box input {
-            width: 260px;
-            padding: 12px 15px;
-            margin: 8px 0;
+            width: 100%;
+            padding: 11px 14px;
+            margin: 7px 0;
             border-radius: 8px;
             border: none;
             outline: none;
-            font-size: 15px;
+            font-size: 14px;
         }
         .login-box button {
-            width: 260px;
-            padding: 12px;
+            width: 100%;
+            padding: 11px;
             background: #ff69b4;
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         /* 倒计时 */
         .count-tip {
@@ -60,25 +62,36 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 90px;
+            font-size: 70px;
             color: #ff69b4;
             font-weight: bold;
             display: none;
             z-index: 99;
         }
-        /* 彩色小卡片 + 开启丝滑过渡 */
+        /* 手机自适应小卡片 */
         .card-box {
             position: absolute;
-            width: 125px;
-            height: 38px;
+            width: 100px;
+            height: 32px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 13px;
+            font-size: 11px;
             color: #333;
-            /* 丝滑爆开核心：过渡时长0.6秒 缓动曲线 */
+            border-radius: 4px;
             transition: left 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), 
                         top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        /* 电脑上恢复正常大小 */
+        @media (min-width: 768px) {
+            .card-box {
+                width: 125px;
+                height: 38px;
+                font-size: 13px;
+            }
+            .count-tip {
+                font-size: 90px;
+            }
         }
     </style>
 </head>
@@ -96,10 +109,13 @@
 <div class="count-tip" id="countTip">别心急<br>3</div>
 
 <script>
-// ===================== 完全使用你的 Python 参数 =====================
-const WIN_W = 125;
-const WIN_H = 38;
-const HEART_SCALE = 26;
+// ===================== 配置 =====================
+const WIN_W = 100;
+const WIN_H = 32;
+const PC_WIN_W = 125;
+const PC_WIN_H = 38;
+
+const HEART_SCALE = 22;
 const HEART_COUNT = 130;
 const NEW_ADD_COUNT = 70;
 const WAIT_SEC = 1;
@@ -120,6 +136,7 @@ let screenW = window.innerWidth;
 let screenH = window.innerHeight;
 let centerX = screenW / 2;
 let centerY = screenH / 2;
+let isMobile = window.innerWidth < 768;
 
 // 登录验证
 function loginCheck() {
@@ -149,10 +166,11 @@ function startCountDown() {
     }, 1000);
 }
 
-// 爱心坐标公式（和你Python完全一致）
+// 爱心坐标公式
 function getHeartPoints(t) {
-    let x = HEART_SCALE * 16 * Math.pow(Math.sin(t), 3);
-    let y = -HEART_SCALE * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    let scale = isMobile ? 20 : 26;
+    let x = scale * 16 * Math.pow(Math.sin(t), 3);
+    let y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
     return { x, y };
 }
 
@@ -170,20 +188,22 @@ function createCard(x, y) {
 
 // 随机角落生成
 function randomCornerPos() {
+    let w = isMobile ? WIN_W : PC_WIN_W;
+    let h = isMobile ? WIN_H : PC_WIN_H;
     let edge = ["left", "right", "top", "bottom"][Math.floor(Math.random() * 4)];
     let x, y;
     if (edge === "left") {
         x = Math.random() * (screenW / 4);
-        y = Math.random() * (screenH - WIN_H);
+        y = Math.random() * (screenH - h);
     } else if (edge === "right") {
-        x = (screenW * 3/4) + Math.random() * (screenW/4 - WIN_W);
-        y = Math.random() * (screenH - WIN_H);
+        x = (screenW * 3/4) + Math.random() * (screenW/4 - w);
+        y = Math.random() * (screenH - h);
     } else if (edge === "top") {
-        x = Math.random() * (screenW - WIN_W);
+        x = Math.random() * (screenW - w);
         y = Math.random() * (screenH / 4);
     } else {
-        x = Math.random() * (screenW - WIN_W);
-        y = (screenH * 3/4) + Math.random() * (screenH/4 - WIN_H);
+        x = Math.random() * (screenW - w);
+        y = (screenH * 3/4) + Math.random() * (screenH/4 - h);
     }
     return { x, y };
 }
@@ -195,12 +215,15 @@ function delay(ms) {
 
 // 主效果：爱心丝滑爆开
 async function startHeartEffect() {
+    let w = isMobile ? WIN_W : PC_WIN_W;
+    let h = isMobile ? WIN_H : PC_WIN_H;
+
     // 1. 生成爱心
     for (let i = 0; i < HEART_COUNT; i++) {
         let t = i * 2 * Math.PI / HEART_COUNT;
         let pos = getHeartPoints(t);
-        let px = centerX + pos.x - WIN_W / 2;
-        let py = centerY + pos.y - WIN_H / 2;
+        let px = centerX + pos.x - w / 2;
+        let py = centerY + pos.y - h / 2;
         let card = createCard(px, py);
         heartCards.push(card);
         await delay(30);
@@ -209,10 +232,10 @@ async function startHeartEffect() {
     // 2. 定格1秒
     await delay(WAIT_SEC * 1000);
 
-    // 3. 丝滑渐变爆开 不是瞬移
+    // 3. 丝滑渐变爆开
     heartCards.forEach(card => {
-        let tx = Math.random() * (screenW - WIN_W);
-        let ty = Math.random() * (screenH - WIN_H);
+        let tx = Math.random() * (screenW - w);
+        let ty = Math.random() * (screenH - h);
         card.style.left = tx + "px";
         card.style.top = ty + "px";
     });
